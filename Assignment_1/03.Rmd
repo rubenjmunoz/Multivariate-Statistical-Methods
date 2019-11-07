@@ -1,0 +1,60 @@
+# `r Chapter02`
+
+## A)
+
+**Instructions**
+Look at the plots (esp. scatterplots) generated in the previous question. Which 3–4 countries appear most extreme? Why do you consider them extreme?
+
+One approach to measuring “extremism” is to look at the distance (needs to be defined!) between an observation and the sample mean vector, i.e. we look how far one is from the average. Such a distance can be called an multivariate residual for the given observation.
+
+**Answer**
+
+## B)
+
+**Instructions**
+The most common residual is the Euclidean distance between the observation and sample
+mean vector, i.e.
+
+[formula place holder]
+
+This distance can be immediately generalized to the $L^r , r > 0$ distance as
+
+[formula place holder]
+
+where p is the dimension of the observation (here p = 7).
+
+Compute the squared Euclidean distance (i.e. r = 2) of the observation from the sample
+mean for all 55 countries using R’s matrix operations. First center the raw data by the means to get x − x for each country. Then do a calculation with matrices that will result in a matrix that has on its diagonal the requested squared distance for each country. Copy this diagonal to a vector and report on the five most extreme countries. In this questions you MAY NOT use any loops.
+
+**Answer**
+
+## C)
+
+**Instructions**
+The different variables have different scales so it is possible that the distances can be dominated by some few variables. To avoid this we can use the squared distance
+
+[formula place holder]
+
+where V is a diagonal matrix with variances of the appropriate variables on the diagonal. The effect, is that for each variable the squared distance is divided by its variance and we have a scaled independent distance.
+It is simple to compute this measure by standardizing the raw data with both means (centring) and standard deviations (scaling), and then compute the Euclidean distance for the normalized data. Carry out these computations and conclude which countries are the most extreme ones. How do your conclusions compare with the unnormalized ones?
+
+**Answer**
+
+## D)
+
+**Instructions**
+The most common statistical distance is the Mahalanobis distance 
+
+[formula place holder]
+
+where C is the sample covariance matrix calculated from the data. With this measure we also use the relationships (covariances) between the variables (and not only the marginal variances as d V (·, ·) does). Compute the Mahalanobis distance, which countries are most extreme now?
+
+**Answer**
+
+## E)
+
+**Instructions**
+Compare the results in b)–d). Some of the countries are in the upper end with all the
+measures and perhaps they can be classified as extreme. Discuss this. But also notice the different measures give rather different results (how does Sweden behave?). Summarize this graphically. Produce Czekanowski’s diagram using e.g. the RMaCzek package. In case of problems please describe them.
+
+**Answer**

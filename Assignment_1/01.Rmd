@@ -1,59 +1,18 @@
 # `r Chapter01`
 
-\lipsum[2-4]
+Consider the data set in the T1-9.dat file, National track records for women. For 55 different countries we have the national records for 7 variables (100, 200, 400, 800, 1500, 3000m and marathon ). Use R to do the following analyses.
 
-## Subtitle
+## A)
 
-\begin{wrapfigure}{r}{0.3\textwidth}
-\centering
-\includegraphics[width=0.3\textwidth]{images/pepe.png}
-\vspace{-10pt}
-\caption{Basic layout}
-\end{wrapfigure}
+**Instructions**
+Describe the 7 variables with mean values, standard deviations e.t.c.
 
-\lipsum[2-6]
+**Answer**
 
-```{#numCode .R .numberLines}
-expo<-function(x){
-  return(x^5*exp(-x)/120)}
-f.MCMC.MHoo<-function(nstep,X0,props){
-  vN<-1:nstep
-  vX<-rep(X0,nstep);
-  for (i in 2:nstep){
-    X<-vX[i-1]
-    Y<-rlnorm(1, meanlog = log(X), sdlog = props) 
-    u<-runif(1) # this is a comment
-    a<-min(c(1,(expo(Y)*dlnorm(X,meanlog = log(X),sdlog=props))/
-               (expo(X)*dlnorm(Y,meanlog =log(X),sdlog=props))))
-    if (u <=a){vX[i]<-Y}else{vX[i]<-X}
-  }
-  return(cbind(vN,vX))}
-plot01 <-f.MCMC.MHoo(2000,50,1)
-```
+## B)
 
-```{r, echo = FALSE, purl = TRUE, eval = FALSE}
-expo<-function(x){
-  return(x^5*exp(-x)/120)}
-f.MCMC.MHoo<-function(nstep,X0,props){
-  vN<-1:nstep
-  vX<-rep(X0,nstep);
-  for (i in 2:nstep){
-    X<-vX[i-1]
-    Y<-rlnorm(1, meanlog = log(X), sdlog = props) 
-    u<-runif(1) # this is a comment
-    a<-min(c(1,(expo(Y)*dlnorm(X,meanlog = log(X),sdlog=props))/
-               (expo(X)*dlnorm(Y,meanlog =log(X),sdlog=props))))
-    if (u <=a){vX[i]<-Y}else{vX[i]<-X}
-  }
-  return(cbind(vN,vX))}
-plot01 <-f.MCMC.MHoo(2000,50,1)
-```
+**Instructions**
+Illustrate the variables with different graphs (explore what plotting possibilities R has). Make sure that the graphs look attractive (it is absolutely necessary to look at the labels, font sizes, point types). Are there any apparent extreme values? Do the variables seem normally distributed? Plot the best fitting (match the mean and standard deviation, i.e. method of moments) Gaussian density curve on the data’s histogram. For the last part you may be interested in the hist() and density() functions.
 
-## Subtitle
+**Answer**
 
-\lipsum[1-5]
-
-
-```{r, echo = FALSE, warning=FALSE, purl = FALSE, out.width="49%", fig.pos = "h", fig.align = "center", fig.show="hold", fig.cap = "\\textit{Metropolis-Hastings sampled Lognormal distribution vs Chi-squared distribution.}", out.extra='angle= 0'}
-knitr::include_graphics(c("images/plot01.png", "images/plot02.png"))
-```

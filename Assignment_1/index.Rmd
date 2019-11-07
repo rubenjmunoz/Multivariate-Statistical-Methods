@@ -68,12 +68,13 @@ set.seed(12345)
 
 <!-- Prepare title info -->
 ```{r titles, include=FALSE, echo=FALSE}
-Title <- "classnamehere"
-Subtitle <- "Computer Lab X"
-Author <- "X(y),Ruben Muñoz (rubmu773)"
+Title <- "732A97 Multivariate Statistical Methods"
+Subtitle <- "Assignment 1 Examining multivariate data"
+Author <- "W(w),X(y),Y(y),Z(z)"
 Date <- Sys.Date()
-Chapter01 <- "exercise01"
-Chapter02 <- "exercise02"
+Chapter01 <- "Describing individual variables"
+Chapter02 <- "Relationships between the variables"
+Chapter02 <- "Examining for extreme values"
 ```
 <!-- To keep a simple main page -->
 \pagestyle{empty}
@@ -116,12 +117,17 @@ Chapter02 <- "exercise02"
 ```{r child='01.Rmd'}
 ```
 
-<!-- \newpage -->
+\newpage
 
-<!--  ```{r child='02.Rmd'} -->
-<!--  ``` -->
+ ```{r child='02.Rmd'}
+ ```
 
 \newpage
 
-```{r child='apendix.Rmd'}
-```
+ ```{r child='03.Rmd'}
+ ```
+ 
+\newpage
+
+<!-- ```{r child='apendix.Rmd'} -->
+<!-- ``` -->
