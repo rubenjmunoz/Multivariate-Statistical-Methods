@@ -95,7 +95,18 @@ combn(1:7, 2, simplify = FALSE, FUN=function(i){
 
 
 ```{r}
-pairs(trackrcs[,-1], pch = ".", cex = 1.5)
+pairs(trackrcs[,-1], pch = ".", cex = 1.5, panel = function(x, y, ...){
+   points(x, y, ...)
+   abline(lm(y ~ x), col = "grey") })
 
 ```
+The scatterplot matrix tells us that "marathon" is quite an outlier.
 
+
+## c) Explore what other plotting possibilities R offers for multivariate data. Present other (at least two) graphs that you find interesting with respect to this data set.
+
+### stars plot
+```{r}
+stars(trackrcs[,-1], cex = 0.55)
+```
+A stars plot is not very useful. We can tell from literature that it is also outdated.
