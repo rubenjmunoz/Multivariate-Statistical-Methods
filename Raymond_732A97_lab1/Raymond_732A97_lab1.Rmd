@@ -1,0 +1,101 @@
+---
+title: "732A97 Multivariate Statistics Lab 1"
+author: "Raymond Sseguya"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+# Question 1: Describing individual variables
+
+*Consider the data set in the T1-9.dat file, National track records for women. For 55 different countries we have the national records for 7 variables (100, 200, 400, 800, 1500, 3000m and marathon ). Use R to do the following analyses.*
+
+
+### input
+```{r}
+trackrcs <- read.table("T1-9.dat")
+colnames(trackrcs) <- c("countries", "100m", "200m", "400m", "800m", "1500m", "3000m", "marathon")
+```
+
+
+
+## a) Describe the 7 variables with mean values, standard deviations e.t.c
+
+### mean values
+```{r}
+colMeans((trackrcs)[,-1])
+```
+
+### median
+```{r}
+apply((trackrcs)[,-1], 2, median)
+```
+
+### standard deviation
+```{r}
+apply((trackrcs)[,-1], 2, sd)
+```
+
+
+### maximum
+```{r}
+apply((trackrcs)[,-1], 2, max)
+```
+
+
+### minimum
+```{r}
+apply((trackrcs)[,-1], 2, min)
+```
+
+
+## b) Illustrate the variables with different graphs (explore what plotting possibilities R has). Make sure that the graphs look attractive (it is absolutely necessary to look at the labels, font sizes, point types). Are there any apparent extreme values? Do the variables seem normally distributed? Plot the best fitting (match the mean and standard deviation, i.e. method of moments) Gaussian density curve on the datas histogram. For the last part you may be interested in the hist() and density() functions.
+
+\pagebreak
+
+# Question 2: Relationships between the variables
+
+## a) Compute the covariance and correlation matrices for the 7 variables. Is there any apparent structure in them? Save these matrices for future use.
+```{r}
+cov_m <- cov((trackrcs)[,-1])
+corr_m <- cor((trackrcs)[,-1])
+
+cov_m
+corr_m
+```
+Both matrices are symmetric. The correlation matrix has ones on the main diagonal.
+
+
+## b) Generate and study the scatterplots between each pair of variables. Any extreme values?
+
+```{r, include=FALSE, eval=FALSE}
+trackrcs2 <- (trackrcs)[,-1]
+
+combn(1:7, 2, simplify = FALSE, FUN=function(i){
+
+  # print( plot(x=trackrcs2[,i[1]], y=trackrcs2[,i[2]],
+  #             xlab=paste(colnames(trackrcs2)[i[1]]),
+  #             ylab=paste(colnames(trackrcs2)[i[2]])) )
+
+  library(ggplot2)
+  ggplot()+aes(x=trackrcs2[,i[1]], y=trackrcs2[,i[2]])+
+     geom_point(stat = "identity")+
+     labs(x=paste(colnames(trackrcs2)[i[1]]),
+          y=paste(colnames(trackrcs2)[i[2]]),
+          title = paste( colnames(trackrcs2)[i[1]],
+          "Vs ", colnames(trackrcs2)[i[2]]) )
+
+})
+
+```
+
+
+```{r}
+pairs(trackrcs[,-1], pch = ".", cex = 1.5)
+
+```
+
