@@ -19,6 +19,9 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```{r}
 trackrcs <- read.table("T1-9.dat")
 colnames(trackrcs) <- c("countries", "x100m", "x200m", "x400m", "x800m", "x1500m", "x3000m", "marathon")
+
+trackrcs2 <- (trackrcs)[,-1]
+rownames(trackrcs2) <- trackrcs[,1]
 ```
 
 
@@ -113,8 +116,6 @@ A stars plot is not very useful. We can tell from literature that it is also out
 
 ### heatmaps
 ```{r}
-trackrcs2 <- (trackrcs)[,-1]
-rownames(trackrcs2) <- trackrcs[,1]
 heatmap(x=as.matrix(trackrcs2))
 
 ```
@@ -129,3 +130,21 @@ heatmap(x=as.matrix(trackrcs2))
 
 The 3 countries that seem most extreme are Brazil, Russia and the United States. 
 
+
+## b) Compute the squared Euclidean distance (i.e. r = 2) of the observation from the sample mean for all 55 countries using R's matrix operations. First center the raw data by the means to get (x arrow - x bar) for each country. Then do a calculation with matrices that will result in a matrix that has on its diagonal the requested squared distance for each country. Copy this diagonal to a vector and report on the five most extreme countries. In this questions you MAY NOT use any loops.
+
+```{r}
+x_bar = apply(trackrcs2,1,mean)
+d0 = as.matrix(trackrcs2-x_bar)
+deviation = sqrt(d0%*%t(d0))
+diagonal_vector <- diag(deviation)
+deviation_countries <- 
+  cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector)
+deviation_countries_ordered <-  
+   deviation_countries[order(-deviation_countries$diagonal_vector), ]
+
+deviation_countries_ordered[1:5,]
+```
+The five most extreme countries are `r deviation_countries_ordered[1:5,1]`.
+
+## c) 
