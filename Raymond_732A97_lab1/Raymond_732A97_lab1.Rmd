@@ -135,8 +135,8 @@ The 3 countries that seem most extreme are Brazil, Russia and the United States.
 
 ```{r}
 x_bar = apply(trackrcs2,1,mean)
-d0 = as.matrix(trackrcs2-x_bar)
-deviation = sqrt(d0%*%t(d0))
+d0 = as.matrix(trackrcs2-x_bar); dim(d0)
+deviation = sqrt( d0%*%t(d0) ); dim(deviation)
 diagonal_vector <- diag(deviation)
 deviation_countries <- 
   cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector)
@@ -147,4 +147,60 @@ deviation_countries_ordered[1:5,]
 ```
 The five most extreme countries are `r deviation_countries_ordered[1:5,1]`.
 
+\pagebreak
+
 ## c) 
+
+```{r}
+V <- diag(apply(trackrcs2,2,var))
+d_sq_v <- d0%*%solve(V)%*%t(d0)
+diagonal_vector2 <- diag(d_sq_v)
+deviation_countries2 <- 
+  cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector2)
+deviation_countries_ordered2 <-  
+   deviation_countries[order(-deviation_countries2$diagonal_vector), ]
+
+deviation_countries_ordered2[1:5,]
+```
+Except Great Britain, still the top five most extreme countries are the same and they are `r deviation_countries_ordered2[1:5,1]`
+
+```{r, eval=FALSE, include=FALSE}
+## testing .. 
+x_bar = apply(trackrcs2,1,mean)
+d0 = scale(as.matrix(trackrcs2-x_bar)); dim(d0)
+deviation = sqrt( d0%*%t(d0) ); dim(deviation)
+diagonal_vector <- diag(deviation)
+deviation_countries <- 
+  cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector)
+deviation_countries_ordered <-  
+   deviation_countries[order(-deviation_countries$diagonal_vector), ]
+
+deviation_countries_ordered[1:5,]
+```
+
+
+
+## d) Compute the Mahalanobis distance, which countries are most extreme now?
+```{r}
+C <- cov(trackrcs2)
+d_sq_m <- d0%*%solve(C)%*%t(d0)
+diagonal_vector3 <- diag(d_sq_m)
+deviation_countries3 <- 
+  cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector2)
+deviation_countries_ordered3 <-  
+   deviation_countries[order(-deviation_countries2$diagonal_vector), ]
+
+deviation_countries_ordered3[1:5,]
+```
+Still the top five most extreme countries are the same and they are `r deviation_countries_ordered3[1:5,1]`
+
+
+## e) Compare the results in b){d). Some of the countries are in the upper end with all the measures and perhaps they can be classified as extreme. Discuss this. But also notice the different measures give rather different results (how does Sweden behave?). Summarize this graphically. Produce Czekanowski's diagram using e.g. the RMaCzek package. In case of problems please describe them.
+
+```{r}
+library(RMaCzek)
+x<-czek_matrix(trackrcs2)
+plot(x)
+plot.czek_matrix(x)
+```
+
