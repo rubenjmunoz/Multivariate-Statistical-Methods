@@ -1,0 +1,101 @@
+# `r Chapter02`
+
+## A)
+
+**Instructions**
+Compute the covariance and correlation matrices for the 7 variables. Is there any apparent
+structure in them? Save these matrices for future use.
+
+**Answer**
+
+```{r, echo = FALSE, purl = TRUE, eval = T, fig.pos = "h", fig.align = "center", fig.show="hold"}
+df_covariance <- cov(data_nt_pl) # covariance matrix
+# print it fancy
+df_covariance %>% t() %>% kable("latex", booktabs=TRUE, caption = "Covariance matrix/table") %>% kable_styling(latex_options =c("striped", "HOLD_position"))
+```
+
+```{r, echo = FALSE, purl = TRUE, eval = T, fig.pos = "h", fig.align = "center", fig.show="hold"}
+df_correlation <- cor(data_nt_pl) # correlation matrix
+# print it fancy
+df_correlation %>% t() %>% kable("latex", booktabs=TRUE, caption = "Correlation matrix/table") %>% kable_styling(latex_options =c("striped", "HOLD_position"))
+```
+
+We can see that each type of race is highly correlated with similar races, if a country is good for a 100m race, its highly likely that will be too for 200m.
+
+This could be due to certain countries training more for marathons or 100m, being better and that and worse in different races.
+
+\newpage
+
+## B)
+
+**Instructions**
+Generate and study the scatterplots between each pair of variables. Any extreme values?
+
+**Answer**
+
+```{r, echo = FALSE, purl = TRUE, eval = F, message=FALSE}
+png(filename="images/plot04.png", width = 2*500, height = 2*500)
+# plot(data_nt_pl)
+## put histograms on the diagonal
+panel.hist <- function(x, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(usr[1:2], 0, 1.5) )
+    h <- hist(x, plot = FALSE)
+    breaks <- h$breaks; nB <- length(breaks)
+    y <- h$counts; y <- y/max(y)
+    rect(breaks[-nB], 0, breaks[-1], y, col = "light blue", ...)
+}
+pairs(data_nt_pl, panel = panel.smooth,
+      cex = 1.5, pch = 1, bg = "light blue", horOdd=TRUE,
+      diag.panel = panel.hist, cex.labels = 2, font.labels = 2)
+dev.off()
+```
+```{r, echo = FALSE, warning=FALSE, purl = FALSE, out.width="100%", fig.pos = "h", fig.align = "center", fig.show="hold", fig.cap = "\\textit{Scatterplot of everybody against everybody.}", out.extra='angle= 0'}
+knitr::include_graphics(c("images/plot04.png"))
+```
+As pointed before, we see some extreme values in the marathon times. The scatterplot is quite useful to see how correlation decreases when the races length differ. Furthermore we see positive correlation in all cases, as expected, longer distances take longer to complete.
+
+\newpage
+
+## C)
+
+**Instructions**
+Explore what other plotting possibilities R offers for multivariate data. Present other (at least two) graphs that you find interesting with respect to this data set.
+
+**Answer**
+```{r, echo = FALSE, purl = TRUE, eval = F, message=FALSE}
+# Parrallel coordinates plot
+png(filename="images/plot05.png", width = 2*500, height = 1*400)
+plot(x=1:length(data_nt_pl[1,]), y=data_nt_pl[1,], type="l", 
+     col=my_r_color, las=1, xaxt = "n")
+axis(1, at=1:length(data_nt_pl[1,]), labels=colnames(data_nt_pl))
+for(i in 2:length(data_nt_pl[,1])){
+  lines(x=1:length(data_nt_pl[i,]), y=data_nt_pl[i,], col=my_r_color[i])
+}
+dev.off()
+# multivariate scatterplots 
+png(filename="images/plot06.png", width = 2*500, height = 1*400)
+boxplot((data_nt_pl), col=my_r_color, horizontal=T, las=1)
+dev.off()
+
+mlab <- "Time it took to run 100m"
+plab <- "Time it took to run 200m"
+layout(matrix(c(2, 0, 1, 3), nrow = 2, byrow = TRUE),
+       widths = c(2, 1),
+       heights = c(1, 2),
+       respect = TRUE)
+png(filename="images/plot07.png", width = 2*500, height = 2*500)
+```
+
+```{r, echo = FALSE, warning=FALSE, purl = FALSE, out.width="100%", fig.pos = "h", fig.align = "center", fig.show="hold", fig.cap = "\\textit{Parallel coordinates plot}", out.extra='angle= 0'}
+knitr::include_graphics(c("images/plot05.png"))
+```
+
+```{r, echo = FALSE, warning=FALSE, purl = FALSE, out.width="100%", fig.pos = "h", fig.align = "center", fig.show="hold", fig.cap = "\\textit{Multivariate boxplot}", out.extra='angle= 0'}
+knitr::include_graphics(c("images/plot06.png"))
+```
+
+ In figure 5: parallel coordinates plot, we can see each line as a different country. The x axis is each different race, and the y axis is the time it took. This plot is quite useful in the sense, that theoretically it would always increase, and we see it decreasing. This reminds us that we are using different scales for the races… Even though it might appear that the runners complete the 800m faster than the 400m, this is due that the 800m results are in minutes, as opposed to the 400m that are measured in seconds.
+ 
+ Figure 6: Multivariate boxplot is quite useful to detect outliers of all different races lengths in one single plot. We can see how the results for 100m,200m,400m,800m are tighter  in the cluster, whereas the marathon presents several outliers.
