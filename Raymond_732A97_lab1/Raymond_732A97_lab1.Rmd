@@ -7,6 +7,8 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(dplyr)
 ```
 
 
@@ -17,8 +19,8 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ### input
 ```{r}
-trackrcs <- read.table("T1-9.dat")
-colnames(trackrcs) <- c("countries", "x100m", "x200m", "x400m", "x800m", "x1500m", "x3000m", "marathon")
+trackrcs <- read.table("T1-9.dat",
+      col.names = c("countries", "x100m", "x200m", "x400m", "x800m", "x1500m", "x3000m", "marathon"))
 
 trackrcs2 <- (trackrcs)[,-1]
 rownames(trackrcs2) <- trackrcs[,1]
@@ -28,31 +30,16 @@ rownames(trackrcs2) <- trackrcs[,1]
 
 ## a) Describe the 7 variables with mean values, standard deviations e.t.c
 
-### mean values
 ```{r}
-colMeans((trackrcs)[,-1])
-```
-
-### median
-```{r}
-apply((trackrcs)[,-1], 2, median)
-```
-
-### standard deviation
-```{r}
-apply((trackrcs)[,-1], 2, sd)
-```
-
-
-### maximum
-```{r}
-apply((trackrcs)[,-1], 2, max)
-```
-
-
-### minimum
-```{r}
-apply((trackrcs)[,-1], 2, min)
+apply(trackrcs[,-1], 2, FUN = function(cl){
+  c("mean"=mean(cl), 
+    "median"=median(cl), 
+    "sd"=sd(cl), 
+    "95% quantile"=quantile(cl, probs = 0.975, names = FALSE), 
+    "5% quantile"=quantile(cl, probs = 0.025, names = FALSE), 
+    "max"=max(cl), 
+    "min"=min(cl))
+}) %>% t()
 ```
 
 
