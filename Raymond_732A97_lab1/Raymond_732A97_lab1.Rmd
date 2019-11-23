@@ -58,16 +58,25 @@ apply((trackrcs)[,-1], 2, min)
 
 ## b) Illustrate the variables with different graphs (explore what plotting possibilities R has). Make sure that the graphs look attractive (it is absolutely necessary to look at the labels, font sizes, point types). Are there any apparent extreme values? Do the variables seem normally distributed? Plot the best fitting (match the mean and standard deviation, i.e. method of moments) Gaussian density curve on the datas histogram. For the last part you may be interested in the hist() and density() functions.
 
+```{r}
+j=0; lapply(trackrcs2, FUN = function(i){
+  j <<- j+1
+  hist(i, main = colnames(trackrcs2)[j], xlab=colnames(trackrcs2)[j])
+})
+
+```
+
+
 \pagebreak
 
 # Question 2: Relationships between the variables
 
 ## a) Compute the covariance and correlation matrices for the 7 variables. Is there any apparent structure in them? Save these matrices for future use.
 ```{r}
-cov_m <- cov((trackrcs)[,-1])
+C <- cov((trackrcs)[,-1])
 corr_m <- cor((trackrcs)[,-1])
 
-cov_m
+C
 corr_m
 ```
 Both matrices are symmetric. The correlation matrix has ones on the main diagonal.
@@ -108,9 +117,11 @@ The scatterplot matrix tells us that "marathon" is quite an outlier.
 
 ## c) Explore what other plotting possibilities R offers for multivariate data. Present other (at least two) graphs that you find interesting with respect to this data set.
 
-### stars plot
+### chernoff face
 ```{r}
-stars(trackrcs[,-1], cex = 0.55)
+library(aplpack)
+faces(trackrcs2)
+
 ```
 A stars plot is not very useful. We can tell from literature that it is also outdated.
 
@@ -182,7 +193,7 @@ deviation_countries_ordered[1:5,]
 
 ## d) Compute the Mahalanobis distance, which countries are most extreme now?
 ```{r}
-C <- cov(trackrcs2)
+
 d_sq_m <- d0%*%solve(C)%*%t(d0)
 diagonal_vector3 <- diag(d_sq_m)
 deviation_countries3 <- 
@@ -197,9 +208,16 @@ Still the top five most extreme countries are the same and they are `r deviation
 
 ## e) Compare the results in b){d). Some of the countries are in the upper end with all the measures and perhaps they can be classified as extreme. Discuss this. But also notice the different measures give rather different results (how does Sweden behave?). Summarize this graphically. Produce Czekanowski's diagram using e.g. the RMaCzek package. In case of problems please describe them.
 
+### Sweden
+```{r}
+
+```
+
+
+### Czekanowski's diagram
 ```{r}
 library(RMaCzek)
-x<-czek_matrix(trackrcs2)
+x<-czek_matrix(trackrcs2, n_classes = 7)
 plot(x)
 plot.czek_matrix(x)
 ```
