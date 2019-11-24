@@ -45,7 +45,7 @@ apply(trackrcs[,-1], 2, FUN = function(cl){
 
 ## b) Illustrate the variables with different graphs (explore what plotting possibilities R has). Make sure that the graphs look attractive (it is absolutely necessary to look at the labels, font sizes, point types). Are there any apparent extreme values? Do the variables seem normally distributed? Plot the best fitting (match the mean and standard deviation, i.e. method of moments) Gaussian density curve on the datas histogram. For the last part you may be interested in the hist() and density() functions.
 
-```{r}
+```{r, eval=FALSE}
 j=0; lapply(trackrcs2, FUN = function(i){
   j <<- j+1
   hist(i, main = colnames(trackrcs2)[j], xlab=colnames(trackrcs2)[j])
