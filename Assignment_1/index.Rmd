@@ -45,24 +45,6 @@ output:
 
 
 
-
-
-<!-- Setup for all the codechunks -->
-```{r setup, echo = FALSE, warning = FALSE, message = FALSE}
-library(ggplot2)
-# only use when knitting tables in to png
-# library(kableExtra)
-color_palette <- c(rgb(38,50,72,alpha=160, max = 255),  # [1] MX robots blue
-                   rgb(255,152,0,alpha=160, max = 255), # [2] MX robots orange
-                   rgb(255,0,0,alpha=100, max = 255),   # [3] Red faded
-                   rgb(0,0,0,alpha=160, max = 255),     # [4] black
-                   rgb(10,150,10,alpha=160, max = 255), # [5] green
-                   rgb(0,0,0,alpha=40, max = 255),      # [6] light Gray
-                   rgb(255,0,0,alpha=255, max = 255),   # [7] Red full
-                   rgb(255,152,0,alpha=200, max = 255)) # [8] MX robots orange fulish
-set.seed(12345)
-```
-
 <!-- dump the code for the apendix -->
 
 
@@ -70,11 +52,11 @@ set.seed(12345)
 ```{r titles, include=FALSE, echo=FALSE}
 Title <- "732A97 Multivariate Statistical Methods"
 Subtitle <- "Assignment 1 Examining multivariate data"
-Author <- "W(w),X(y),Y(y),Z(z)"
+Author <- "Alexander Karlsson(aleka769),Raymond Sseguya(y),Mariano Mariani(marma330), Ruben Munoz(rubmu773)"
 Date <- Sys.Date()
 Chapter01 <- "Describing individual variables"
 Chapter02 <- "Relationships between the variables"
-Chapter02 <- "Examining for extreme values"
+Chapter03 <- "Examining for extreme values"
 ```
 <!-- To keep a simple main page -->
 \pagestyle{empty}
@@ -129,5 +111,5 @@ Chapter02 <- "Examining for extreme values"
  
 \newpage
 
-<!-- ```{r child='apendix.Rmd'} -->
-<!-- ``` -->
+```{r child='apendix.Rmd'}
+```

@@ -1,18 +1,112 @@
 # `r Chapter01`
 
-Consider the data set in the T1-9.dat file, National track records for women. For 55 different countries we have the national records for 7 variables (100, 200, 400, 800, 1500, 3000m and marathon ). Use R to do the following analyses.
+Consider the data set in the `T1-9.dat` file, National track records for women. For 55 different countries we have the national records for 7 variables (100, 200, 400, 800, 1500, 3000m and marathon ). Use `R` to do the following analyses.
+
+```{r, echo = FALSE, purl = TRUE, eval = T, message=FALSE}
+# required libraries
+library(dplyr)
+library(kableExtra)
+library(RColorBrewer)
+my_r_color <- brewer.pal(n=12, name="Paired") # colorblind friendly
+# load data
+data_nt <- read.table(file="T1-9.dat")
+# add feature names
+colnames(data_nt) <- c("Country", "100m", "200m", "400m","800m", "1500m", "3000m", "marathon")
+```
 
 ## A)
 
 **Instructions**
+
 Describe the 7 variables with mean values, standard deviations e.t.c.
 
 **Answer**
 
+```{r, echo = FALSE, purl = TRUE, eval = T, fig.pos = "h", fig.align = "center", fig.show="hold"}
+# get the analicys of each feature
+data_nt_anal <- data.frame("mean"=apply(data_nt[,-1], 2, mean),
+            "median"=apply(data_nt[,-1], 2, median),
+            "sd"=apply(data_nt[,-1], 2, sd),
+            "min"=apply(data_nt[,-1], 2, min),
+            "max"=apply(data_nt[,-1], 2, max),
+            "top 5%"=apply(data_nt[,-1], 2, FUN=function(x){quantile(x,0.05)}),
+            "top 95%"=apply(data_nt[,-1], 2, FUN=function(x){quantile(x,0.95)}))
+# create a fancy table
+data_nt_anal %>% t() %>% kable("latex", booktabs=TRUE, caption = "Analysis by numbers") %>% kable_styling(latex_options =c("striped", "HOLD_position"))
+```
+
+The 100m ,200m and 400m races are in different scale than them 800m, 1500m, 3000m and marathons. As expected, we see the variance increasing, as the races get longer. The longer the race the more factors affecting the final result: 100m races are won by less than a second differences, whereas in the marathons it’s won in the scale of minutes.
+
+\newpage
+
 ## B)
 
 **Instructions**
-Illustrate the variables with different graphs (explore what plotting possibilities R has). Make sure that the graphs look attractive (it is absolutely necessary to look at the labels, font sizes, point types). Are there any apparent extreme values? Do the variables seem normally distributed? Plot the best fitting (match the mean and standard deviation, i.e. method of moments) Gaussian density curve on the data’s histogram. For the last part you may be interested in the hist() and density() functions.
+
+Illustrate the variables with different graphs (explore what plotting possibilities R has). Make sure that the graphs look attractive (it is absolutely necessary to look at the labels, font sizes, point types). Are there any apparent extreme values? Do the variables seem normally distributed? Plot the best fitting (match the mean and standard deviation, i.e. method of moments) Gaussian density curve on the data’s histogram. For the last part you may be interested in the `hist()` and `density()` functions.
 
 **Answer**
 
+```{r, echo = FALSE, purl = TRUE, eval = T, message=FALSE}
+## random nice plots
+## stacked barchart
+data_nt_pl <- data_nt[,-1]
+rownames(data_nt_pl) <- data_nt[,1]
+# sort from lowest to higher time
+totsum <- apply(data_nt_pl, 1, sum)
+totsum <- sort(totsum); index_x <- c()
+for(i in 1:length(totsum)){
+  index_x <- c(index_x, 
+               which(rownames(data_nt_pl) == names(totsum)[i]))
+}
+```
+```{r, echo = FALSE, purl = TRUE, eval = F, message=FALSE}
+png(filename="images/plot01.png", width = 2*500, height = 1*350)
+data_nt_pl[index_x,] %>% t() %>% barplot(col=my_r_color, las=2)
+dev.off()
+
+## find extreme values
+colnames_cat <- colnames(data_nt_pl)
+png(filename="images/plot02.png", width = 2*500, height = 1*450)
+par(mfrow = c(2,4))
+for(i in 1:length(data_nt_pl)){
+  s=2
+  boxplot(data_nt_pl[,i], col=my_r_color[i], main= colnames_cat[i],
+          cex.main=s) #cex.lab=s, cex.axis=s, cex.sub=s)
+}
+par(mfrow = c(1,1))
+dev.off()
+
+# find if variables are normaly distributed/ hustogram with density curve
+png(filename="images/plot03.png", width = 2*500, height = 1*450)
+par(mfrow = c(2,4))
+for(i in 1:length(data_nt_pl)){
+  # avoid desity line being cutted
+  dessitylocal=density(data_nt_pl[,i])
+  hist(data_nt_pl[,i], col=my_r_color[i], main= colnames_cat[i],
+          ylim = c(0, max(dessitylocal$y)), cex.main=2, freq=FALSE)
+  lines(dessitylocal, lwd=2)
+  lines(density(data_nt_pl[,i], adjust=2), 
+        lwd=2, lty="dotted")
+}
+par(mfrow = c(1,1))
+dev.off()
+```
+
+
+```{r, echo = FALSE, warning=FALSE, purl = FALSE, out.width="100%", fig.pos = "h", fig.align = "center", fig.show="hold", fig.cap = "\\textit{Stacked barplot, it gives a general idea of what countries are overall faster. This plot goes from faster to slowest overall times.}", out.extra='angle= 0'}
+knitr::include_graphics(c("images/plot01.png"))
+```
+
+
+```{r, echo = FALSE, warning=FALSE, purl = FALSE, out.width="100%", fig.pos = "h", fig.align = "center", fig.show="hold", fig.cap = "\\textit{A boxplot, it gives a general view of where the datapoints are more consentrated and easier to spot the outliers.This set of boxplots show all the countries in their respective cathegories.}", out.extra='angle= 0'}
+knitr::include_graphics(c("images/plot02.png"))
+```
+
+\newpage
+
+```{r, echo = FALSE, warning=FALSE, purl = FALSE, out.width="100%", fig.pos = "h", fig.align = "center", fig.show="hold", fig.cap = "\\textit{Histogram with a density curve. Looking for variables that are morenormaly distributed.}", out.extra='angle= 0'}
+knitr::include_graphics(c("images/plot03.png"))
+```
+
+As the race gets longer, we see more variance and more extreme values. As it can be seen in Figure 3, the shorter the race the more it looks like a normal. Starting the 1500m race, it starts looking more like a log normal.
