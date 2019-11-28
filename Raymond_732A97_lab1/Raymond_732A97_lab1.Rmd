@@ -156,7 +156,7 @@ diagonal_vector2 <- diag(d_sq_v)
 deviation_countries2 <- 
   cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector2)
 deviation_countries_ordered2 <-  
-   deviation_countries[order(-deviation_countries2$diagonal_vector), ]
+   deviation_countries2[order(-deviation_countries2$diagonal_vector2), ]
 
 deviation_countries_ordered2[1:5,]
 ```
@@ -184,9 +184,9 @@ deviation_countries_ordered[1:5,]
 d_sq_m <- d0%*%solve(C)%*%t(d0)
 diagonal_vector3 <- diag(d_sq_m)
 deviation_countries3 <- 
-  cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector2)
+  cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector3)
 deviation_countries_ordered3 <-  
-   deviation_countries[order(-deviation_countries2$diagonal_vector), ]
+   deviation_countries[order(-deviation_countries3$diagonal_vector3), ]
 
 deviation_countries_ordered3[1:5,]
 ```
