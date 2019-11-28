@@ -17,7 +17,10 @@ library(dplyr); library(ggplot2)
 
 # Question 1: Test of outliers
 
-## a) The Mahalanobis distance is approximately chi-square distributed ...
+## Consider again the data set from the T1-9.dat file, National track records for women. In the first assignment we studied different distance measures between an observation and the sample average vector. The most common multivariate residual is the Mahalanobis distance and we computed this distance for all observations.
+
+
+## a) The Mahalanobis distance is approximately chi{square distributed, if the data comes from a multivariate normal distribution and the number of observations is large. Use this chi-square approximation for testing each observation at the 0:1% significance level and conclude which countries can be regarded as outliers. Should you use a multiple{testing correction procedure? Compare the results with and without one. Why is (or maybe is not) 0.1% a sensible significance level for this task?
 ```{r}
 trackrcs <- read.table("T1-9.dat",
   col.names = c("countries", "x100m", "x200m", 
@@ -37,10 +40,7 @@ deviation_countries3 <-
   cbind.data.frame(countries = as.vector(trackrcs[,1]),diagonal_vector3)
 deviation_countries_ordered3 <-  
    deviation_countries3[order(-deviation_countries3$diagonal_vector3), ]
-# deviation_countries_ordered3[1:5,]
 
-chisq.test(deviation_countries_ordered3$diagonal_vector3,
-           p=rep(0.1, nrow(deviation_countries_ordered3)), rescale.p = TRUE )
 
 named_Mahalanobis <- as.vector(deviation_countries_ordered3[,2])
 names(named_Mahalanobis) <- rownames(deviation_countries_ordered3)
@@ -50,11 +50,35 @@ ch_s <- combn(x=named_Mahalanobis, m=2,
       pv <- chisq.test(x=c, p=rep(sg,2), rescale.p = TRUE)$p.value 
       pvname <- paste0(names(c)[1]," ",names(c)[2])
       assign(pvname, pv)
-      return(list(pv, pvname))
+      return(list(pv, pvname, xx=names(c)[1]))
       }) 
 
-## not outliers
-print(unlist(ch_s[2, which(ch_s[1,] > sg)]))
-```
+outliers_unsorted <- unlist(ch_s[3, which(ch_s[1,] == 0)])
+summary(as.data.frame.character(outliers_unsorted), maxsum = 10)
+print(deviation_countries_ordered3[1:5,])
 
+```
+We can see from the summary that "COK", "PNG", "SAM", "GUA" and "BER" remain the top oultiers even with using the chi-sqaure test.
+
+
+### possibly using a multiple-testing correction procedure
+```{r}
+chisq.test(deviation_countries_ordered3$diagonal_vector3,
+           p=rep(0.1, nrow(deviation_countries_ordered3)), rescale.p = TRUE )
+```
+We can see that a multiple-testing correction procedure is clearly a bad idea as it does not actually pinpoint the actual outliers but it tells us only that there are indeed some outliers. 
+
+
+## b) One outlier is North Korea. This country is not an outlier with the Euclidean distance. Try to explain these seemingly contradictory results.
+
+It seems in our results, North Korea is an outlier throughout.
+
+
+# Question 2: Test, confidence region and confidence intervals for a mean vector
+
+## Look at the bird data in file T5-12.dat and solve Exercise 5:20 of Johnson, Wichern. Do not use any extra R package or built{in test but code all required matrix calculations. You MAY NOT use loops!
+
+```{r}
+
+```
 
