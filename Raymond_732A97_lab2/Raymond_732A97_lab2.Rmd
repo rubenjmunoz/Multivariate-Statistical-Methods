@@ -20,7 +20,7 @@ library(dplyr); library(ggplot2)
 ## Consider again the data set from the T1-9.dat file, National track records for women. In the first assignment we studied different distance measures between an observation and the sample average vector. The most common multivariate residual is the Mahalanobis distance and we computed this distance for all observations.
 
 
-## a) The Mahalanobis distance is approximately chi{square distributed, if the data comes from a multivariate normal distribution and the number of observations is large. Use this chi-square approximation for testing each observation at the 0:1% significance level and conclude which countries can be regarded as outliers. Should you use a multiple{testing correction procedure? Compare the results with and without one. Why is (or maybe is not) 0.1% a sensible significance level for this task?
+## a) The Mahalanobis distance is approximately chi-square distributed, if the data comes from a multivariate normal distribution and the number of observations is large. Use this chi-square approximation for testing each observation at the 0.1% significance level and conclude which countries can be regarded as outliers. Should you use a multiple-testing correction procedure? Compare the results with and without one. Why is (or maybe is not) 0.1% a sensible significance level for this task?
 ```{r}
 trackrcs <- read.table("T1-9.dat",
   col.names = c("countries", "x100m", "x200m", 
@@ -64,9 +64,18 @@ We can see from the summary that "COK", "PNG", "SAM", "GUA" and "BER" remain the
 ### possibly using a multiple-testing correction procedure
 ```{r}
 chisq.test(deviation_countries_ordered3$diagonal_vector3,
-           p=rep(0.1, nrow(deviation_countries_ordered3)), rescale.p = TRUE )
+           p=rep(0.1/100, nrow(deviation_countries_ordered3)), rescale.p = TRUE )
 ```
 We can see that a multiple-testing correction procedure is clearly a bad idea as it does not actually pinpoint the actual outliers but it tells us only that there are indeed some outliers. 
+
+### correct way
+```{r}
+
+### the critical value
+which(deviation_countries3[,2] > qchisq(p=0.1/100, df=54))
+
+```
+
 
 
 ## b) One outlier is North Korea. This country is not an outlier with the Euclidean distance. Try to explain these seemingly contradictory results.
@@ -74,9 +83,77 @@ We can see that a multiple-testing correction procedure is clearly a bad idea as
 It seems in our results, North Korea is an outlier throughout.
 
 
+\pagebreak
+
+
 # Question 2: Test, confidence region and confidence intervals for a mean vector
 
-## Look at the bird data in file T5-12.dat and solve Exercise 5:20 of Johnson, Wichern. Do not use any extra R package or built{in test but code all required matrix calculations. You MAY NOT use loops!
+## Look at the bird data in file T5-12.dat and solve Exercise 5:20 of Johnson, Wichern. Do not use any extra R package or built-in test but code all required matrix calculations. You MAY NOT use loops!
+
+```{r}
+birds <- read.table("T5-12.DAT", col.names = c("taillength", "winglength") )
+
+```
+
+
+### a) Find and sketch the 95% confidence ellipse for the population means $\mu_1$ and $\mu_2$. Suppose it is known that $\mu_1$ = 190 mm and $\mu_2$ = 275 mm for male hook-billed kites. Are these plausible values for the mean tail length and mean wing length for the female birds? Explain.
+```{r}
+mu0 <- c(190, 275)
+S <- cov(birds); eigen(S)
+p <- ncol(birds); n <- nrow(birds)
+alpha <- 0.05
+c = sqrt(p*(n-1)/(n-p)*qf(p=(1-alpha), df1=p, df2=n-p ))
+(eigen(S)$values)*c/sqrt(n)
+```
+Yes. These are plausible values.
+
+
+### b) Construct the simultaneous 95% $T^{2}$-intervals for $\mu_1$ and $\mu_2$ and the 95% Bonferroni intervals for $\mu_1$ and $\mu_2$. Compare the two sets of intervals. What advantage, if any, do the $T^{2}$-intervals have over the Bonferroni intervals?
+
+#### 95% $T^{2}$-intervals
+```{r}
+n <- nrow(birds)
+# mu <- apply(birds, 2, mean)
+# T_sq <- as.vector(n*t(mu-mu0)%*%solve(S)%*%(mu-mu0)); T_sq < c
+
+c(mu0[1] - (sqrt(c)*sqrt(diag(S)[1]/n) ), mu0[1] + (sqrt(c)*sqrt(diag(S)[1]/n) ))
+
+c(mu0[2] - (sqrt(c)*sqrt(diag(S)[2]/n) ), mu0[2] + (sqrt(c)*sqrt(diag(S)[2]/n) ))
+```
+
+
+#### 95% Bonferroni intervals
+```{r}
+t <- qt(p=( 1-(alpha/(2*p)) ), df=n-1)
+
+c(mu0[1] - (t*sqrt(diag(S)[1]/n) ), mu0[1] + (t*sqrt(diag(S)[1]/n) ))
+
+c(mu0[2] - (t*sqrt(diag(S)[2]/n) ), mu0[2] + (t*sqrt(diag(S)[2]/n) ))
+```
+
+
+### (c) Is the bivariate normal distribution a viable population model? Explain with reference to Q-Q plots and a scatter diagram.
+
+```{r}
+ggplot(data = birds)+aes(x=taillength, y=winglength)+
+  geom_point(stat = "identity")
+
+ggplot(data = birds)+aes(sample=taillength)+stat_qq()+stat_qq_line()+
+  labs(title = "Tail Length")
+
+ggplot(data = birds)+aes(sample=winglength)+stat_qq()+stat_qq_line()+
+  labs(title = "Wing Length")
+  
+```
+From the Q-Q plots, we can say that the data is normally distributed.
+
+
+\pagebreak
+
+
+# Question 3: Comparison of mean vectors (one-way MANOVA)
+
+## We will look at a data set on Egyptian skull measurements (published in 1905 and now in heplots R package as the object Skulls). Here observations are made from five epochs and on each object the maximum breadth (mb), basibregmatic height (bh), basialiveolar length (bl) and nasal height (nh) were measured.
 
 ```{r}
 
