@@ -1,0 +1,250 @@
+---
+title: "lab2"
+author: "Maquieira Mariani"
+date: "29/11/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+# Lab 2 - Multivariate Statistical Methods.
+## Question 3
+
+
+We will look at a data set on Egyptian skull measurements (published in 1905 and now in heplots R package as the object Skulls). Here observations are made from five epochs and on each object the maximum breadth (mb), basibregmatic height (bh), basialiveolar length (bl) and nasal height (nh) were measured.
+```{r}
+library(heplots)
+attach(Skulls)
+```
+
+
+## a) Explore the data first 
+```{r}
+means = tapply(1:nrow(Skulls), 
+               Skulls$epoch, 
+               function(i) apply(Skulls[i,colnames(Skulls)[-1]], 2, mean)
+               )
+
+
+means = matrix(unlist(means), 
+               nrow = length(means), 
+               byrow = TRUE
+               )
+
+colnames(means) = colnames(Skulls)[-1]
+
+rownames(means) = levels(Skulls$epoch)
+
+means
+```
+
+
+
+## a) and present plots that you find informative.
+```{r}
+library(scatterplot3d)
+scatterplot3d(
+  Skulls[,-1], pch = 19, color = "steelblue",
+   grid = TRUE, box = FALSE,
+   mar = c(3, 3, 0.5, 3)        
+  )
+
+```
+
+
+```{r}
+library(GGally)
+library(ggplot2)
+ggpairs(Skulls[,-1])+ theme_bw()
+```
+
+
+
+```{r}
+ggpairs(Skulls, aes(color = epoch))+ theme_bw()
+```
+
+
+
+
+
+
+\newpage
+## b) Now we are interested whether there are differences between the epochs. 
+
+
+
+Before applying MANOVA, we state our 3 assumptions:
+
+
+1) Independent observations: since a really high correlation would mean that we are measuring almost the same thing; MANOVA works best when the variables have little correlation (which is in fact our case).
+
+2) Normality.
+
+3) Equal variance-covariance matrices between groups.
+
+Now, we are looking if the data are different between ephocs... We look at how much the variance from their means...
+```{r}
+epoch=factor(epoch)
+Y=cbind(mb,bh,bl,nh)
+Skulls.manova=manova(Y~epoch)
+```
+
+
+We use the summary function, for calculating Wilks,Pillai, Hotteling-Lawley and Roy tests.
+```{r}
+summary(Skulls.manova,test = "Wilks")
+```
+
+
+
+```{r}
+summary(Skulls.manova,test = "Pillai")
+```
+
+
+```{r}
+summary(Skulls.manova,test = "Hotelling-Lawley")
+```
+
+
+```{r}
+summary(Skulls.manova,test = "Roy")
+```
+
+## b) Do the mean vectors differ? Study this question and justify your conclusions.
+
+We say our null hypothesis is: $$\mu_1=\mu_2=\mu_3=\mu_4$$
+
+Per our results above, we can clearly see p-value <.05.
+
+Therefore, we can *reject* the null hypothesis and it is concluded there are significant differences in the means.
+
+
+
+
+\newpage
+## c) If the means differ between epochs compute and report simultaneous confidence intervals.
+```{r}
+n=nrow(Y)
+p=ncol(Y)
+summary(Skulls.manova,test = "Wilks")
+g=5
+alpha=0.05
+
+#from here below it is as if we have 5 different datasets...
+#mean for each epoch, for each variable
+xbar4000BC=colMeans(Skulls[Skulls$epoch=="c4000BC",-1])
+xbar3300BC=colMeans(Skulls[Skulls$epoch=="c3300BC",-1])
+xbar1850BC=colMeans(Skulls[Skulls$epoch=="c1850BC",-1])
+xbar200BC=colMeans(Skulls[Skulls$epoch=="c200BC",-1])
+xbarAD150=colMeans(Skulls[Skulls$epoch=="cAD150",-1])
+
+#covariance matrix for each epoch
+S4000BC=cov(Skulls[Skulls$epoch=="c4000BC",-1])
+S3300BC=cov(Skulls[Skulls$epoch=="c3300BC",-1])
+S1850BC=cov(Skulls[Skulls$epoch=="c1850BC",-1])
+S200BC=cov(Skulls[Skulls$epoch=="c200BC",-1])
+SAD150=cov(Skulls[Skulls$epoch=="cAD150",-1])
+
+W= (30-1)*S4000BC+
+  (30-1)*S3300BC+
+  (30-1)*S1850BC+
+  (30-1)*S200BC+
+  (30-1)*SAD150
+  
+
+
+qtlevel= qt(1-alpha/(p*g*(g-1)),
+            df=n-g)
+cii=function(x1,x2,W)
+{
+  list(
+  lo=(x1-x2)-qtlevel*sqrt(W/(n-g)*(1/30+1/30)),
+  up=(x1-x2)+qtlevel*sqrt(W/(n-g)*(1/30+1/30))
+  )
+}
+
+
+#tau represents the ci of each epoch.
+for (i in 1:p)
+{ 
+  ci=cii(xbar4000BC[i],xbar3300BC[i],W[i,i])
+  cat("tau1[",i,"]-tau2[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar4000BC[i],xbar1850BC[i],W[i,i])
+  cat("tau1[",i,"]-tau3[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar4000BC[i],xbar200BC[i],W[i,i])
+  cat("tau1[",i,"]-tau4[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar4000BC[i],xbarAD150[i],W[i,i])
+  cat("tau1[",i,"]-tau5[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar3300BC[i],xbar1850BC[i],W[i,i])
+  cat("tau2[",i,"]-tau3[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar3300BC[i],xbar200BC[i],W[i,i])
+  cat("tau2[",i,"]-tau4[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar3300BC[i],xbarAD150[i],W[i,i])
+  cat("tau2[",i,"]-tau5[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar1850BC[i],xbar200BC[i],W[i,i])
+  cat("tau3[",i,"]-tau4[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar1850BC[i],xbarAD150[i],W[i,i])
+  cat("tau3[",i,"]-tau5[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+  ci=cii(xbar200BC[i],xbarAD150[i],W[i,i])
+  cat("tau4[",i,"]-tau5[",i,"] belongs to(",ci$lo,",",ci$up,")\n",sep="")
+  
+}  
+#tau represents the ci of each epoch.
+```
+
+Not all simultaneous confidence intervals cover zero; therefore we can say that there is significant difference between:
+
+tau1[1]-tau4[1] belongs to(-8.038609,-0.2280576)
+tau1[1]-tau5[1] belongs to(-8.705276,-0.8947243)
+
+
+
+
+
+
+
+
+
+\newpage
+## c)Inspect the residuals whether they have mean 0 and if they deviate from normality (graphically).
+
+Now we explore if each epoch is normally distributed.
+```{r}
+plotqq=function(S,epo,xbar)
+{
+Sinv = solve(S)
+Skullsx= Skulls[Skulls$epoch==epo,-1]
+datachisq =diag(t(t(Skullsx)-xbar) %*% Sinv %*% (t(Skullsx)-xbar))
+qqplot(qchisq(ppoints(500),df=p),
+       datachisq, main="",
+      xlab="Theoretical Quantiles",ylab="Sample Quantiles")
+qqline(datachisq,
+       distribution=function(p) qchisq(p, df = p))
+}
+
+plotqq(S4000BC,"c4000BC",xbar4000BC)
+plotqq(S3300BC,"c3300BC",xbar3300BC)
+plotqq(S1850BC,"c1850BC",xbar1850BC)
+plotqq(S200BC,"c200BC",xbar200BC)
+plotqq(SAD150,"cAD150",xbarAD150)
+```
+
+The normality assumption is violated for each epoch; therefore we conclude that the MANOVA assumptions are not realistic for the data.
+
+
+
+
+
