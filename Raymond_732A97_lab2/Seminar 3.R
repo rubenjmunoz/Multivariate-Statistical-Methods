@@ -27,13 +27,14 @@ axes = half_lengths*eigen(S)$vectors; axes
 alpha <- 0.05; p <- ncol(sweatdata); n <- nrow(sweatdata)
 c = sqrt(p*(n-1)/(n-p)*qf(p=(1-alpha), df1=p, df2=n-p ))
 mu0 <- c(4, 50, 10)
+mu <- apply(sweatdata,2,mean, simplify = TRUE)
 
-c(mu0[1] - (c*sqrt(diag(S)[1]/n) ), mu0[1] + (c*sqrt(diag(S)[1]/n) ))
-c(mu0[2] - (c*sqrt(diag(S)[2]/n) ), mu0[2] + (c*sqrt(diag(S)[2]/n) ))
-c(mu0[3] - (c*sqrt(diag(S)[3]/n) ), mu0[3] + (c*sqrt(diag(S)[3]/n) ))
+c(mu[1] - (c*sqrt(diag(S)[1]/n) ), mu[1] + (c*sqrt(diag(S)[1]/n) ))
+c(mu[2] - (c*sqrt(diag(S)[2]/n) ), mu[2] + (c*sqrt(diag(S)[2]/n) ))
+c(mu[3] - (c*sqrt(diag(S)[3]/n) ), mu[3] + (c*sqrt(diag(S)[3]/n) ))
 
 t <- qt(p=( 1-(alpha/(2*p)) ), df=n-1)
 
-c(mu0[1] - (t*sqrt(diag(S)[1]/n) ), mu0[1] + (t*sqrt(diag(S)[1]/n) ))
-c(mu0[2] - (t*sqrt(diag(S)[2]/n) ), mu0[2] + (t*sqrt(diag(S)[2]/n) ))
-c(mu0[3] - (t*sqrt(diag(S)[3]/n) ), mu0[3] + (t*sqrt(diag(S)[3]/n) ))
+c(mu[1] - (t*sqrt(diag(S)[1]/n) ), mu[1] + (t*sqrt(diag(S)[1]/n) ))
+c(mu[2] - (t*sqrt(diag(S)[2]/n) ), mu[2] + (t*sqrt(diag(S)[2]/n) ))
+c(mu[3] - (t*sqrt(diag(S)[3]/n) ), mu[3] + (t*sqrt(diag(S)[3]/n) ))

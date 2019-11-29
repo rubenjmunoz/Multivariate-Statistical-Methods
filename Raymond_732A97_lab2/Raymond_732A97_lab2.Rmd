@@ -72,7 +72,7 @@ We can see that a multiple-testing correction procedure is clearly a bad idea as
 ```{r}
 
 ### the critical value
-which(deviation_countries3[,2] > qchisq(p=0.1/100, df=54))
+which(deviation_countries3[,2] > qchisq(p=(1-0.1/100), df=54))
 
 ```
 
@@ -111,11 +111,11 @@ Yes. These are plausible values.
 #### 95% $T^{2}$-intervals
 ```{r}
 mu0 <- c(190, 275)
-# mu <- apply(birds, 2, mean)
+mu <- apply(birds, 2, mean)
 # T_sq <- as.vector(n*t(mu-mu0)%*%solve(S)%*%(mu-mu0)); T_sq < c
 
-c(mu0[1] - (c*sqrt(diag(S)[1]/n) ), mu0[1] + (c*sqrt(diag(S)[1]/n) ))
-c(mu0[2] - (c*sqrt(diag(S)[2]/n) ), mu0[2] + (c*sqrt(diag(S)[2]/n) ))
+c(mu[1] - (c*sqrt(diag(S)[1]/n) ), mu[1] + (c*sqrt(diag(S)[1]/n) ))
+c(mu[2] - (c*sqrt(diag(S)[2]/n) ), mu[2] + (c*sqrt(diag(S)[2]/n) ))
 ```
 
 
@@ -123,8 +123,8 @@ c(mu0[2] - (c*sqrt(diag(S)[2]/n) ), mu0[2] + (c*sqrt(diag(S)[2]/n) ))
 ```{r}
 t <- qt(p=( 1-(alpha/(2*p)) ), df=n-1)
 
-c(mu0[1] - (t*sqrt(diag(S)[1]/n) ), mu0[1] + (t*sqrt(diag(S)[1]/n) ))
-c(mu0[2] - (t*sqrt(diag(S)[2]/n) ), mu0[2] + (t*sqrt(diag(S)[2]/n) ))
+c(mu[1] - (t*sqrt(diag(S)[1]/n) ), mu[1] + (t*sqrt(diag(S)[1]/n) ))
+c(mu[2] - (t*sqrt(diag(S)[2]/n) ), mu[2] + (t*sqrt(diag(S)[2]/n) ))
 ```
 
 
