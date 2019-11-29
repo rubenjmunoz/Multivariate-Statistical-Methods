@@ -98,10 +98,8 @@ birds <- read.table("T5-12.DAT", col.names = c("taillength", "winglength") )
 
 ### a) Find and sketch the 95% confidence ellipse for the population means $\mu_1$ and $\mu_2$. Suppose it is known that $\mu_1$ = 190 mm and $\mu_2$ = 275 mm for male hook-billed kites. Are these plausible values for the mean tail length and mean wing length for the female birds? Explain.
 ```{r}
-mu0 <- c(190, 275)
 S <- cov(birds); eigen(S)
-p <- ncol(birds); n <- nrow(birds)
-alpha <- 0.05
+p <- ncol(birds); n <- nrow(birds); alpha <- 0.05
 c = sqrt(p*(n-1)/(n-p)*qf(p=(1-alpha), df1=p, df2=n-p ))
 (eigen(S)$values)*c/sqrt(n)
 ```
@@ -112,13 +110,12 @@ Yes. These are plausible values.
 
 #### 95% $T^{2}$-intervals
 ```{r}
-n <- nrow(birds)
+mu0 <- c(190, 275)
 # mu <- apply(birds, 2, mean)
 # T_sq <- as.vector(n*t(mu-mu0)%*%solve(S)%*%(mu-mu0)); T_sq < c
 
-c(mu0[1] - (sqrt(c)*sqrt(diag(S)[1]/n) ), mu0[1] + (sqrt(c)*sqrt(diag(S)[1]/n) ))
-
-c(mu0[2] - (sqrt(c)*sqrt(diag(S)[2]/n) ), mu0[2] + (sqrt(c)*sqrt(diag(S)[2]/n) ))
+c(mu0[1] - (c*sqrt(diag(S)[1]/n) ), mu0[1] + (c*sqrt(diag(S)[1]/n) ))
+c(mu0[2] - (c*sqrt(diag(S)[2]/n) ), mu0[2] + (c*sqrt(diag(S)[2]/n) ))
 ```
 
 
@@ -127,7 +124,6 @@ c(mu0[2] - (sqrt(c)*sqrt(diag(S)[2]/n) ), mu0[2] + (sqrt(c)*sqrt(diag(S)[2]/n) )
 t <- qt(p=( 1-(alpha/(2*p)) ), df=n-1)
 
 c(mu0[1] - (t*sqrt(diag(S)[1]/n) ), mu0[1] + (t*sqrt(diag(S)[1]/n) ))
-
 c(mu0[2] - (t*sqrt(diag(S)[2]/n) ), mu0[2] + (t*sqrt(diag(S)[2]/n) ))
 ```
 
