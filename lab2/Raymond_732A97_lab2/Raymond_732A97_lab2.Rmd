@@ -152,6 +152,8 @@ From the Q-Q plots, we can say that the data is normally distributed.
 ## We will look at a data set on Egyptian skull measurements (published in 1905 and now in heplots R package as the object Skulls). Here observations are made from five epochs and on each object the maximum breadth (mb), basibregmatic height (bh), basialiveolar length (bl) and nasal height (nh) were measured.
 
 ```{r}
+library(heplots)
+head(Skulls)
 
 ```
 
