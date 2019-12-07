@@ -11,11 +11,13 @@ knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
 
 # Data
 ```{r}
+library(dplyr)
+
 trackrcs <- read.table("T1-9.dat",
   col.names = c("countries", "x100m", "x200m", 
         "x400m", "x800m", "x1500m", "x3000m", "marathon"))
+rownames(trackrcs) <- (trackrcs)[,1]
 
-library(dplyr)
 ```
 
 
@@ -46,10 +48,7 @@ res$rotation[,1:2]
 ### correlation of the standardized variables with the components
 ```{r}
 CorWithPC <- cor( t(scale((trackrcs)[,-1])),  res$rotation[,1:2] )
-# CorWithPC
-countries_CorWithPC = cbind.data.frame(countries = trackrcs[,1], CorWithPC)
-countries_CorWithPC
-
+CorWithPC
 ```
 
 
@@ -61,10 +60,7 @@ sprintf("%2.3f",eigenvalues/sum(eigenvalues)*100)[1:2]
 screeplot(res)
 
 CorWithPC %>% apply(MARGIN=2,FUN=abs) %>% 
-  apply(MARGIN=2,FUN=function(a) 100*cumsum(a)/sum(a)) -> CumPerc
-
-countries_CumPerc = cbind.data.frame(countries = trackrcs[,1], CumPerc)
-countries_CumPerc
+  apply(MARGIN=2,FUN=function(a) 100*cumsum(a)/sum(a))
 
 ```
 
