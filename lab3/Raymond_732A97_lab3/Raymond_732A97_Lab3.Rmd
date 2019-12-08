@@ -26,7 +26,7 @@ rownames(trackrcs) <- trackrcs[,1]
 ## a) Obtain the sample correlation matrix R for these data, and determine its eigenvalues and eigenvectors.
 ```{r}
 S <- cov(trackrcs[,-1])
-R <- cov2cor(S); R
+R <- cor(trackrcs[,-1]); R
 
 eigen(R)$values
 eigen(R)$vectors
