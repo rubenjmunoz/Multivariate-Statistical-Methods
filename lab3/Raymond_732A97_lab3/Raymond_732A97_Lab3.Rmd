@@ -54,7 +54,7 @@ This is following the formula in the text book on page 433, "Result 8.3" and "Eq
 ```{r}
 eigenvalues=res$sdev^2
 CorWithPC <-
-  t(res$rotation[,1:2])%*%sqrt(diag(eigenvalues))%*%solve(sqrt(diag(diag(R))))
+  t(res$rotation[,1:2])%*%sqrt(diag(eigenvalues))%*%solve(sqrt(diag(diag(S))))
 colnames(CorWithPC) <- colnames(trackrcs[,-1])
 t(CorWithPC)
 ```
@@ -73,7 +73,7 @@ CorWithPC %>% apply(MARGIN=1,FUN=abs) %>% t() %>%
 
 ## c) Interpret the two principal components obtained in Part b. (Note that the first component is essentially a normalized unit vector and might measure the athletic excellence of a given nation. The second component might measure the relative strength of a nation at various running distances.)
 
-It seems the first principal component is a meausure of how much less time the atheletes of a particular nation take to complete a race relative to their other fellow competitiors from other nations. We can notice that athletes generally concentrate a lot of efforts in running very fast so that they complete their races in the shortest times possible in the 100 metre races and the marathon.
+It seems the first principal component is a meausure of how much less time the athletes of a particular nation take to complete a race relative to their other fellow competitiors from other nations. We can notice that athletes generally concentrate a lot of efforts in running very fast so that they complete their races in the shortest times possible in the 100 metre races and the marathon.
 
 Clearly, the second principal component tells us about the physical strength of an athlete in a given race. We see that for 100 meters, the values are very high because athletes are giving their all while for the marathan, the values are actually negative because the athletes are usually very tired and they try to minimize using a lot of energy as a tactic to run for the very long distance.
 
