@@ -25,8 +25,9 @@ rownames(trackrcs) <- trackrcs[,1]
 
 ## a) Obtain the sample correlation matrix R for these data, and determine its eigenvalues and eigenvectors.
 ```{r}
-S <- cov(trackrcs[,-1])
-R <- cor(trackrcs[,-1]); kable(R, digits = 3)
+X <- trackrcs[,-1]
+S <- cov(X)
+R <- cor(X); kable(R, digits = 3)
 eigen(R)$values
 kable(eigen(R)$vectors, digits = 3)
 
@@ -37,7 +38,7 @@ kable(eigen(R)$vectors, digits = 3)
 
 ### the first two principal components for the standardized variables
 ```{r}
-res=prcomp((trackrcs)[,-1], scale. = FALSE)
+res=prcomp(X, scale. = TRUE)
 # No sacling at this point because we are going to use the correlation matrix later
 
 # Each PC is a linear combination of the original variables
@@ -52,9 +53,9 @@ kable(res$rotation[,1:2], digits = 3)
 This is following the formula in the text book on page 433, "Result 8.3" and "Equation 8-8"
 ```{r}
 eigenvalues=res$sdev^2
-CorWithPC <-
-  t(res$rotation[,1:2])%*%sqrt(diag(eigenvalues))%*%solve(sqrt(diag(diag(S))))
-colnames(CorWithPC) <- colnames(trackrcs[,-1])
+Z <- res$rotation[,1:2]
+CorWithPC <- t(Z)%*%sqrt(diag(eigenvalues))
+colnames(CorWithPC) <- colnames(X)
 kable(t(CorWithPC), digits = 3)
 ```
 
@@ -72,16 +73,16 @@ CorWithPC %>% apply(MARGIN=1,FUN=abs) %>% t() %>%
 
 ## c) Interpret the two principal components obtained in Part b. (Note that the first component is essentially a normalized unit vector and might measure the athletic excellence of a given nation. The second component might measure the relative strength of a nation at various running distances.)
 
-It seems the first principal component is a meausure of how much less time the athletes of a particular nation take to complete a race relative to their other fellow competitiors from other nations. We can notice that athletes generally concentrate a lot of efforts in running very fast so that they complete their races in the shortest times possible in the 100 metre races and the marathon.
+It seems the first principal component is a meausure of how much less time the athletes of a particular nation take to complete a race relative to their other fellow competitiors from other nations. We can notice that athletes generally concentrate a lot of efforts in running very fast so that they complete their races in the shortest times possible in the 100 metre races and the progression continues likewise up to the marathon were the atheletes expect to spend more time on the race
 
-Clearly, the second principal component tells us about the physical strength of an athlete in a given race. We see that for 100 meters, the values are very high because athletes are giving their all while for the marathan, the values are actually negative because the athletes are usually very tired and they try to minimize using a lot of energy as a tactic to run for the very long distance.
+Clearly, the second principal component tells us about the physical strength of an athlete in a given race. We see that for 100 meters, 200 metres and 300 metres, the values are very high because athletes are giving their all while for the marathan, the values are actually negative because the athletes are usually very tired and they try to minimize using a lot of energy as a tactic to run for the very long distance.
 
 \pagebreak
 
 ## d) Rank the nations based on their score on the first principal component. Does this ranking correspond with your inituitive notion of athletic excellence for the various countries?
 ```{r}
-NewScore <- as.matrix(trackrcs[,-1])%*%as.matrix(res$rotation[,1])
-NewScore = cbind.data.frame(countries = trackrcs[,1], NewScore = NewScore)
+NewScore <- as.matrix(X)%*%as.matrix(res$rotation[,1])
+NewScore = cbind.data.frame(countries = X, NewScore = NewScore)
 NewScore[,1][order(NewScore[,2], decreasing = TRUE)]
 
 ```
