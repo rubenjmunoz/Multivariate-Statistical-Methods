@@ -81,7 +81,6 @@ Clearly, the second principal component tells us about the physical strength of 
 
 ## d) Rank the nations based on their score on the first principal component. Does this ranking correspond with your inituitive notion of athletic excellence for the various countries?
 ```{r}
-# CorWithPC2 <- cor( t(scale((trackrcs)[,-1])),  res$rotation[,1:2] )
 NewScore <- as.matrix(trackrcs[,-1])%*%as.matrix(res$rotation[,1])
 NewScore = cbind.data.frame(countries = trackrcs[,1], NewScore = NewScore)
 NewScore[,1][order(NewScore[,2], decreasing = TRUE)]
@@ -95,12 +94,20 @@ This ranking indeed corresponds with my inituitive notion of the athletic excell
 
 
 # Question 2: Factor analysis
+
+## Perform a factor analysis of the national track records for women given in Table 1.9. Use the sample covariance matrix S and interpret the factors. Compute factor scores, and check for outliers in the data. Repeat the analysis with the sample correlation matrix R. Does it make a difference if R, rather than S, is factored? Explain.
+
+## Try both PC and ML as estimation methods. Notice that R's factanal() only does ML estimation. For the PC method you can use the principal() function of the psych package. What does it mean that the parameter rotation of factanal() is set to "varimax" by default (equivalently rotate of principal())? Do not forget to check the adequacy of your model.
+
+## Tip: Read section "A Large Sample Test for the Number of Common Factors".
+
 ```{r}
 factanal(trackrcs[,-1], factors = 3, covmat = S) # varimax is the default
 factanal(trackrcs[,-1], factors = 3, covmat = R)
 
-psych::principal(cov2cor(S), nfactors=3, rotate="varimax")
-psych::fa(cov2cor(S), nfactors=3, rotate="varimax")
+library(psych)
+principal(trackrcs[,-1], nfactors=3, rotate="varimax", covar = FALSE)
+fa(trackrcs[,-1], nfactors=3, rotate="varimax", covar = FALSE)
 
 ```
 
