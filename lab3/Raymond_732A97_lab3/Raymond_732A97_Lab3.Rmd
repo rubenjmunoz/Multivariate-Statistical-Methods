@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
 
 # Data
 ```{r}
-library(dplyr)
+library(dplyr); library(knitr)
 
 trackrcs <- read.table("T1-9.dat",
   col.names = c("countries", "x100m", "x200m", 
@@ -26,10 +26,9 @@ rownames(trackrcs) <- trackrcs[,1]
 ## a) Obtain the sample correlation matrix R for these data, and determine its eigenvalues and eigenvectors.
 ```{r}
 S <- cov(trackrcs[,-1])
-R <- cor(trackrcs[,-1]); R
-
+R <- cor(trackrcs[,-1]); kable(R, digits = 3)
 eigen(R)$values
-eigen(R)$vectors
+kable(eigen(R)$vectors, digits = 3)
 
 ```
 
@@ -43,7 +42,7 @@ res=prcomp((trackrcs)[,-1], scale. = FALSE)
 
 # Each PC is a linear combination of the original variables
 #### res$rotation
-res$rotation[,1:2]
+kable(res$rotation[,1:2], digits = 3)
 ```
 
 
@@ -56,14 +55,14 @@ eigenvalues=res$sdev^2
 CorWithPC <-
   t(res$rotation[,1:2])%*%sqrt(diag(eigenvalues))%*%solve(sqrt(diag(diag(S))))
 colnames(CorWithPC) <- colnames(trackrcs[,-1])
-t(CorWithPC)
+kable(t(CorWithPC), digits = 3)
 ```
 
 
 ### cummulative percentage of total standardized sample variance explained by the 2 components
 ```{r}
 CorWithPC %>% apply(MARGIN=1,FUN=abs) %>% t() %>%
-  apply(MARGIN=1,FUN=function(a) 100*cumsum(a)/sum(a))
+  apply(MARGIN=1,FUN=function(a) 100*cumsum(a)/sum(a)) %>% kable(digits = 3)
 
 ```
 
