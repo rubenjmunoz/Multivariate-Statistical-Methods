@@ -16,7 +16,7 @@ library(dplyr)
 trackrcs <- read.table("T1-9.dat",
   col.names = c("countries", "x100m", "x200m", 
         "x400m", "x800m", "x1500m", "x3000m", "marathon"))
-rownames(trackrcs) <- (trackrcs)[,1]
+rownames(trackrcs) <- trackrcs[,1]
 
 ```
 
@@ -25,7 +25,7 @@ rownames(trackrcs) <- (trackrcs)[,1]
 
 ## a) Obtain the sample correlation matrix R for these data, and determine its eigenvalues and eigenvectors.
 ```{r}
-S <- cov((trackrcs)[,-1])
+S <- cov(trackrcs[,-1])
 R <- cov2cor(S); R
 
 eigen(R)$values
@@ -50,14 +50,13 @@ res$rotation[,1:2]
 \pagebreak
 
 ### correlation of the standardized variables with the components
+This is following the formula in the text book on page 433, "Result 8.3" and "Equation 8-8"
 ```{r}
-### Method 1 (based on textbook)
 eigenvalues=res$sdev^2
 CorWithPC <-
   t(res$rotation[,1:2])%*%sqrt(diag(eigenvalues))%*%solve(sqrt(diag(diag(R))))
 colnames(CorWithPC) <- colnames(trackrcs[,-1])
 t(CorWithPC)
-
 ```
 
 
@@ -74,23 +73,21 @@ CorWithPC %>% apply(MARGIN=1,FUN=abs) %>% t() %>%
 
 ## c) Interpret the two principal components obtained in Part b. (Note that the first component is essentially a normalized unit vector and might measure the athletic excellence of a given nation. The second component might measure the relative strength of a nation at various running distances.)
 
+It seems the first principal component is a meausure of how much less time the atheletes of a particular nation take to complete a race relative to their other fellow competitiors from other nations. We can notice that athletes generally concentrate a lot of efforts in running very fast so that they complete their races in the shortest times possible in the 100 metre races and the marathon.
 
+Clearly, the second principal component tells us about the physical strength of an athlete in a given race. We see that for 100 meters, the values are very high because athletes are giving their all while for the marathan, the values are actually negative because the athletes are usually very tired and they try to minimize using a lot of energy as a tactic to run for the very long distance.
 
 \pagebreak
 
 ## d) Rank the nations based on their score on the first principal component. Does this ranking correspond with your inituitive notion of athletic excellence for the various countries?
 ```{r}
-### Method 2 (based on observation)
-CorWithPC2 <- cor( t(scale((trackrcs)[,-1])),  res$rotation[,1:2] )
+# CorWithPC2 <- cor( t(scale((trackrcs)[,-1])),  res$rotation[,1:2] )
+NewScore <- as.matrix(trackrcs[,-1])%*%as.matrix(res$rotation[,1])
+NewScore = cbind.data.frame(countries = trackrcs[,1], NewScore = NewScore)
+NewScore[,1][order(NewScore[,2], decreasing = TRUE)]
 
-countries_CorWithPC = cbind.data.frame(countries = trackrcs[,1], 
-                            correlation = (CorWithPC2[,1]),
-                            unsigned_correlation = abs(CorWithPC2[,1]))
-                              
-countries_CorWithPC[,1][order(countries_CorWithPC[,3], decreasing = TRUE)]
-countries_CorWithPC[,1][order(countries_CorWithPC[,2], decreasing = TRUE)]
 ```
-We get a different ranking when we use correlations directly (with their signs) from when we use unsigned correlations (the magnitude of the correlations). The ranking seems to be very innacurate about the athletic excellence for the various countries.
+This ranking indeed corresponds with my inituitive notion of the athletic excellence for the various countries. The principal components are indeed capturing well the ranking of the countries.
 
 
 
