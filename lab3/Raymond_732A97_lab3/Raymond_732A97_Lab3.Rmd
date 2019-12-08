@@ -28,6 +28,9 @@ rownames(trackrcs) <- (trackrcs)[,1]
 S <- cov((trackrcs)[,-1])
 R <- cov2cor(S); R
 
+eigen(R)$values
+eigen(R)$vectors
+
 ```
 
 
@@ -35,7 +38,8 @@ R <- cov2cor(S); R
 
 ### the first two principal components for the standardized variables
 ```{r}
-res=prcomp((trackrcs)[,-1], scale. = TRUE)
+res=prcomp((trackrcs)[,-1], scale. = FALSE)
+# No sacling at this point because we are going to use the correlation matrix later
 
 # Each PC is a linear combination of the original variables
 #### res$rotation
@@ -47,20 +51,20 @@ res$rotation[,1:2]
 
 ### correlation of the standardized variables with the components
 ```{r}
-CorWithPC <- cor( t(scale((trackrcs)[,-1])),  res$rotation[,1:2] )
-CorWithPC
+### Method 1 (based on textbook)
+eigenvalues=res$sdev^2
+CorWithPC <-
+  t(res$rotation[,1:2])%*%sqrt(diag(eigenvalues))%*%solve(sqrt(diag(diag(R))))
+colnames(CorWithPC) <- colnames(trackrcs[,-1])
+t(CorWithPC)
+
 ```
 
 
 ### cummulative percentage of total standardized sample variance explained by the 2 components
 ```{r}
-eigenvalues=res$sdev^2
-# proportion of variation
-sprintf("%2.3f",eigenvalues/sum(eigenvalues)*100)[1:2]
-screeplot(res)
-
-CorWithPC %>% apply(MARGIN=2,FUN=abs) %>% 
-  apply(MARGIN=2,FUN=function(a) 100*cumsum(a)/sum(a))
+CorWithPC %>% apply(MARGIN=1,FUN=abs) %>% t() %>%
+  apply(MARGIN=1,FUN=function(a) 100*cumsum(a)/sum(a))
 
 ```
 
@@ -76,9 +80,12 @@ CorWithPC %>% apply(MARGIN=2,FUN=abs) %>%
 
 ## d) Rank the nations based on their score on the first principal component. Does this ranking correspond with your inituitive notion of athletic excellence for the various countries?
 ```{r}
+### Method 2 (based on observation)
+CorWithPC2 <- cor( t(scale((trackrcs)[,-1])),  res$rotation[,1:2] )
+
 countries_CorWithPC = cbind.data.frame(countries = trackrcs[,1], 
-                            correlation = (CorWithPC[,1]),
-                            unsigned_correlation = abs(CorWithPC[,1]))
+                            correlation = (CorWithPC2[,1]),
+                            unsigned_correlation = abs(CorWithPC2[,1]))
                               
 countries_CorWithPC[,1][order(countries_CorWithPC[,3], decreasing = TRUE)]
 countries_CorWithPC[,1][order(countries_CorWithPC[,2], decreasing = TRUE)]
