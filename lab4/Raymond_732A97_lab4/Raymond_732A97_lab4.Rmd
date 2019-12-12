@@ -48,7 +48,7 @@ t <- test_statistic(n=n, p=p, q=q, squared_rhos = squared_rhos); t
 c <- qchisq(p=1-0.05, df=p*q); c
 t > c
 ```
-We REJECT the null hypothesis at 5% significance level that there is NO association between the groups of variables. The test statistic `r t` is GREATER than the critical value `r c`.
+We REJECT the null hypothesis at 5% significance level. Therefore we can say that that is NO association between the groups of variables. The test statistic `r t` is GREATER than the critical value `r c`.
 
 \pagebreak
 
@@ -62,6 +62,7 @@ There are two significant canonical correlations `r sqrt(squared_rhos[1:2])` bec
 ## c) Interpret the "significant" squared canonical correlations.
 ## Tip: Read section "Canonical Correlations as Generalizations of Other Correlation Coefficients".
 
+Glucose intolerance and insulin response to oral glucose have a recognizable effect on relative weight and fasting plasma resistance. Patients who are glucose intolerant will tend to be fatter.
 
 
 ## d) Interpret the canonical variates by using the coefficients and suitable correlations.
