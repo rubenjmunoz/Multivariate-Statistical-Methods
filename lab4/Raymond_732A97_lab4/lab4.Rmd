@@ -1,0 +1,177 @@
+---
+title: "lab4"
+author: "Maquieira Mariani"
+date: "12/12/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+data=read.table("P10-16.DAT")
+data
+```
+
+
+
+
+First group is "Glucose intolerance", "Insulin response to oral glucose" and "Insulin resistance".
+Second group is "Relative weight" and "Fasting plasma glucose".
+
+
+Variance of "Glucose intolerance", "Insulin response to oral glucose" and "Insulin resistance".
+(Upper left matrix)
+```{r}
+v1= as.matrix(data[1:3,1:3])
+v1
+```
+
+
+
+
+
+Variance of "Relative weight" and "Fasting plasma glucose".
+```{r}
+v2=as.matrix(data[4:5,4:5])
+v2
+```
+
+
+Covariance 1st and 2nd group
+```{r}
+v12=as.matrix(data[1:3,4:5])
+v21=as.matrix(data[4:5,1:3])
+```
+
+
+
+
+
+
+## a) Test at the 5% level if there is any association between the groups of variables.
+
+It is often linear combinations of variables that are interesting and useful for predictive or comparative purposes. The main task of canonical correlation analysis is to summarize the associations between the groups.
+
+When $\sum_{12}=0$ (v12=0) all the canonical correlations must be zero, and there is no point in
+pursuing a canonical correlation analysis. Therefore we need to test $\sum_{12}=0$.
+
+As stated in 10-39 formula in the book:
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('p1.jpeg')
+```
+
+```{r}
+cm=as.matrix(data)
+n=46
+p=3
+q=2
+qchisq(1-0.05,df=p*q) 
+```
+
+If our result is greater than 12.59, we shall accept the null hypothesis.
+
+```{r}
+p1=-(n-1-1/2*(p+q+1))
+p2=log(det(v1)*det(v2)/det(cm))
+
+p1*p2
+```
+
+We reject the null hypotehsis. Since the null hypothesis is rejected, it is natural to examine the “significance” of the individual canonical correlations. 
+
+
+
+
+
+
+
+## b) How many pairs of canonical variates are significant?
+
+Since the canonical correlations are ordered from the largest to the smallest, we can begin by assuming that the first canonical correlation is nonzero and the remaining canonical correlations are zero. If this hypothesis is rejected, we assume that the first two canonical correlations are nonzero, but the remaining canonical correlations are zero, and so forth.
+
+
+
+We assume that the first canonical correlation is non-zero and the remaining are zero!
+
+
+
+
+
+From example 10.1 from book:
+
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('p2.jpeg')
+```
+
+
+```{r}
+library(expm) #sqrtm does matrix square root.
+form=solve(sqrtm(v1)) %*% v12 %*% solve(v2) %*% v21 %*% solve(sqrtm(v1))
+eig=eigen(form)
+sqrt(eig$values)
+```
+
+This is the largest correlation possible between linear combinations of variables from the 2 groups.
+
+The third canonical correlation is very small to calculate, and consequently, the third pair of canonical variates, although uncorrelated with members of the first pair, conveys very little information about the association between sets.
+
+
+
+
+
+## c) Interpret the significant squared canonical correlations.
+
+From book: because of its multiple correlation coefficient interpretation, the squared canonical correlation is the proportion of the variance of canonical variate “explained” by the set. It is also the proportion of the variance of canonical variate “explained” by the set Therefore, it is often called the shared variance between the two sets. The largest value, is sometimes regarded as a measure of set “overlap.”
+
+
+
+
+## d) Interpret the canonical variates by using the coefficients and suitable correlations.
+from example 10.1
+```{r}
+solve(sqrtm(v1))%*%eig$vectors[,1]
+
+
+
+```
+$$\hat{U_1} = 0.013 z_1^{(1)}	- 0.014z_2^{(1)}+	0.023z_3^{(1)}$$
+
+```{r}
+form2=solve(sqrtm(v2)) %*% v21 %*% solve(v1) %*% v12 %*% solve(sqrtm(v2))
+eig2=eigen(form2)
+solve(sqrtm(v2))%*%eig2$vectors[,1]
+```
+$$\hat{V_1} = -8.066 z_1^{(2)}	+ 0.0191z_2^{(2)}$$
+
+
+Since each coefficient describes weights. We can say the group U, is mostly represented by 'insulin resistance'(weight 0.023)
+
+Group V is pretty much represented by 'relative weight'
+
+
+
+## e) Are the "significant" canonical variates good summary measures of the respective data sets?
+
+Following example 10.7
+```{r}
+a=solve(sqrtm(v1))%*%eig$vectors[,1]
+b=solve(sqrtm(v2))%*%eig2$vectors[,1]
+
+1/3*(a[1]^2+a[2]^2+a[3]^2)
+1/2*(b[1]^2+b[2]^2)
+
+```
+The first sample canonical variate  of the first group  accounts .0003% of the set’s total sample variance. 
+
+The first sample canonical variate of the second group explains 32.52% of the set’s total sample variance.
+
+We might thus infer that the first sample linear combination of the second group is a “better” representative of its set than the linear combination of the first group is is of its set.
+
+
+## f) Give your opinion on the success of this canonical correlation analysis.
+There is no definition for 'success'. But we can say that since the canonical correlation analysis seeks to identify and quantify the associations between two sets of variables, and we have identified two of such, with correlation 0.5173449 and 0.1255082 respectively, we consider this a success.
+
