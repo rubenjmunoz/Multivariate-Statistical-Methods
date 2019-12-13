@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE,
 library(dplyr); library(knitr)
 
 S <- as.matrix(read.table("P10-16.dat"))
-R <- cov2cor(S); R
+R <- cov2cor(S); kable(R)
 ```
 
 ![Assignment4](10p16.PNG)
@@ -58,11 +58,14 @@ R_res = ccm_Func(R,p=3,q=2)
 test_statistic <- function(n,p,q, squared_rhos){
   -(n-1-0.5*(p+q+1))*log(prod(1-squared_rhos))  }
 n = 46; p=3; q=2
-t <- test_statistic(n=n, p=p, q=q, squared_rhos=R_res$squared_rhos); t
-c <- qchisq(p=1-0.05, df=p*q); c
-t > c
+t <- test_statistic(n=n, p=p, q=q, squared_rhos=R_res$squared_rhos)
+c <- qchisq(p=1-0.05, df=p*q)
+
+kable(t(c(t,c, as.character(t>c) )), 
+      col.names=c("Test Statistic", "Critical Value", "Check t > c"), digits = 3)
 ```
-We REJECT the null hypothesis at 5% significance level. Therefore we can say that that is NO association between the groups of variables. The test statistic `r t` is GREATER than the critical value `r c`.
+
+We REJECT the null hypothesis at 5% significance level. Therefore we can say that that is SIGNIFICANT correlation between the groups of variables. The test statistic `r t` is GREATER than the critical value `r c`.
 
 
 
@@ -78,17 +81,24 @@ There are two significant canonical correlations `r sqrt(R_res$squared_rhos[1:2]
 ## c) Interpret the "significant" squared canonical correlations.
 ## Tip: Read section "Canonical Correlations as Generalizations of Other Correlation Coefficients".
 
-Glucose intolerance and insulin response to oral glucose have a recognizable effect on relative weight and fasting plasma resistance. Patients who are glucose intolerant will tend to be fatter.
+"Glucose intolerance" and "insulin response to oral glucose"" have a recognizable effect on "relative weight" and "fasting plasma resistance" among patients. Patients who are glucose intolerant will tend to be fatter.
 
 
 ## d) Interpret the canonical variates by using the coefficients and suitable correlations.
 ```{r}
 options(digits=5)
-R_res$a_s; R_res$b_s
+kable(R_res$a_s, col.names=sapply(1:ncol(R_res$a_s), 
+                    FUN=function(i) paste0("a_",i)) )
 
+kable(R_res$b_s, col.names=sapply(1:ncol(R_res$b_s), 
+                    FUN=function(i) paste0("b_",i)) )
+
+options(digits=3)
 ```
 
-a_1 is `r R_res$a_s[,1]`. a_2 is `r R_res$a_s[,2]`. b_1 is `r R_res$b_s[,1]` and b_2 is `r R_res$b_s[,2]`. 
+Because in this case the correlation matrix was used, $U$ and $V$ are the canonical variates and they are expressed as $U = aZ$ and $V = bZ$ where $Z$ is the standardized variates and $a$ and $b$ are the vectors of the coefficients of the linear combinations of the standardized variates that summarise the correlation between the variables.
+
+A `r unclass(R_res$a_s[1,1])` **increase** in "Glucose intolerance" and a `r unclass(R_res$a_s[2,1])` **decrease** in "insulin response to oral glucose" are significantly correlated with a `r unclass(R_res$b_s[1,1])` **increase** in "relative weight" and a `r unclass(R_res$b_s[2,1])` **decrease** in "fasting plasma resistance"
 
 
 
