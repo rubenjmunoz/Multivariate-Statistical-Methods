@@ -16,8 +16,8 @@ knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE,
 ```{r}
 library(dplyr); library(knitr)
 
-S <- as.matrix(read.table("P10-16.dat")); S
-R <- cov2cor(S); kable(R)
+S <- as.matrix(read.table("P10-16.dat")); kable(S)
+R <- cov2cor(S)
 ## ![Assignment4](10p16.PNG)
 ```
 
@@ -102,10 +102,10 @@ A_B_calc_Func <- function(M, p, q, z=FALSE, significant=2){
      f_vectors <- inverse_sqrtm(M22)%*%M21%*%inverse_sqrtm(M11)%*%e_vectors
      b_s <- inverse_sqrtm(M22)%*%f_vectors
    }else{
-     a_s <- t(e_vectors)%*%inverse_sqrtm(M11); print(a_s)
+     a_s <- t(e_vectors)%*%inverse_sqrtm(M11)
      ff <- (1/(sqrt(squared_rhos)))[1:significant]
      f_vectors <- ff*inverse_sqrtm(M22)%*%M21%*%inverse_sqrtm(M11)%*%e_vectors
-     b_s <- t(f_vectors)%*%inverse_sqrtm(M22); print(b_s)
+     b_s <- t(f_vectors)%*%inverse_sqrtm(M22)
    }
    
    return(list(a_s=a_s, b_s=b_s))
@@ -123,7 +123,7 @@ kable(U_V$b_s, col.names=sapply(1:ncol(U_V$b_s),
 options(digits=3)
 ```
 
-Because in this case the correlation matrix was used, $U$ and $V$ are the canonical variates and they are expressed as $U = aX$ and $V = bX$ where $X$ is the variables and $a$ and $b$ are the vectors of the coefficients of the linear combinations of the variates that summarise the correlation between the variables.
+Because in this case the covariance matrix was used, $U$ and $V$ are the canonical variates and they are expressed as $U = aX$ and $V = bX$ where $X$ is the variables and $a$ and $b$ are the vectors of the coefficients of the linear combinations of the variates that summarise the correlation between the variables.
 
 A `r unclass(U_V$a_s[1,1])` **change** in "Glucose intolerance" and a `r unclass(U_V$a_s[2,1])` **change** in "insulin response to oral glucose" are significantly correlated with a `r unclass(U_V$b_s[1,1])` **change** in "relative weight" and a `r unclass(U_V$b_s[2,1])` **change** in "fasting plasma resistance".
 
