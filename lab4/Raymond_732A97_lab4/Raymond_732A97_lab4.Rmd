@@ -16,11 +16,15 @@ knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE,
 ```{r}
 library(dplyr); library(knitr)
 
-S <- as.matrix(read.table("P10-16.dat"))
+S <- as.matrix(read.table("P10-16.dat")); S
 R <- cov2cor(S); kable(R)
+## ![Assignment4](10p16.PNG)
 ```
 
-![Assignment4](10p16.PNG)
+
+```{r echo=FALSE, out.width="100%"}
+knitr::include_graphics("10p16.PNG")
+```
 
 
 \pagebreak
@@ -38,7 +42,7 @@ inverse_sqrtm <- function(M){
 }
 
 
-ccm_Func <- function(M, p, q){
+ccm_Func <- function(M, p, q, z=FALSE){
   
    M11=M[1:p, 1:p]; M12=M[1:p, (p+1):(p+q)] 
    M21=t(M[1:p, (p+1):(p+q)]); M22=M[(p+1):(p+q), (p+1):(p+q)]
@@ -46,19 +50,16 @@ ccm_Func <- function(M, p, q){
    squared_rhos <- eigen(CCM1)$values
    # rhos <- sqrt(squared_rhos)
    e_vectors <- eigen(CCM1)$vectors
-   a_s <- inverse_sqrtm(M11)%*%e_vectors
-   f_vectors <- inverse_sqrtm(M22)%*%M21%*%inverse_sqrtm(M11)%*%e_vectors
-   b_s <- inverse_sqrtm(M22)%*%f_vectors
    
-   return(list(squared_rhos=squared_rhos, a_s=a_s, b_s=b_s))
+   return(squared_rhos)
 }
 
-R_res = ccm_Func(R,p=3,q=2)
+R_res = ccm_Func(S,p=3,q=2); R_res
 
 test_statistic <- function(n,p,q, squared_rhos){
   -(n-1-0.5*(p+q+1))*log(prod(1-squared_rhos))  }
 n = 46; p=3; q=2
-t <- test_statistic(n=n, p=p, q=q, squared_rhos=R_res$squared_rhos)
+t <- test_statistic(n=n, p=p, q=q, squared_rhos=R_res)
 c <- qchisq(p=1-0.05, df=p*q)
 
 kable(t(c(t,c, as.character(t>c) )), 
@@ -73,9 +74,9 @@ We REJECT the null hypothesis at 5% significance level. Therefore we can say tha
 
 ## b) How many pairs of canonical variates are significant?
 ```{r}
-options(digits=22); sqrt(R_res$squared_rhos)
+options(digits=7); sqrt(R_res)
 ```
-There are two significant canonical correlations `r sqrt(R_res$squared_rhos[1:2])` because they are not very close to zero.
+There are two significant canonical correlations `r sqrt(R_res[1:2])` because they are not very close to zero.
 
 
 ## c) Interpret the "significant" squared canonical correlations.
@@ -86,19 +87,45 @@ There are two significant canonical correlations `r sqrt(R_res$squared_rhos[1:2]
 
 ## d) Interpret the canonical variates by using the coefficients and suitable correlations.
 ```{r}
-options(digits=5)
-kable(R_res$a_s, col.names=sapply(1:ncol(R_res$a_s), 
+
+A_B_calc_Func <- function(M, p, q, z=FALSE, significant=2){
+  
+   M11=M[1:p, 1:p]; M12=M[1:p, (p+1):(p+q)] 
+   M21=t(M[1:p, (p+1):(p+q)]); M22=M[(p+1):(p+q), (p+1):(p+q)]
+   CCM1=inverse_sqrtm(M11)%*%M12%*%solve(M22)%*%M21%*%inverse_sqrtm(M11)
+   squared_rhos <- eigen(CCM1)$values
+   # rhos <- sqrt(squared_rhos)
+   e_vectors <- eigen(CCM1)$vectors[,1:significant]
+   
+   if(z==TRUE){
+     a_s <- inverse_sqrtm(M11)%*%e_vectors
+     f_vectors <- inverse_sqrtm(M22)%*%M21%*%inverse_sqrtm(M11)%*%e_vectors
+     b_s <- inverse_sqrtm(M22)%*%f_vectors
+   }else{
+     a_s <- t(e_vectors)%*%inverse_sqrtm(M11); print(a_s)
+     ff <- (1/(sqrt(squared_rhos)))[1:significant]
+     f_vectors <- ff*inverse_sqrtm(M22)%*%M21%*%inverse_sqrtm(M11)%*%e_vectors
+     b_s <- t(f_vectors)%*%inverse_sqrtm(M22); print(b_s)
+   }
+   
+   return(list(a_s=a_s, b_s=b_s))
+}
+
+U_V = A_B_calc_Func(S,p=3,q=2, significant = 2)
+
+options(digits=10)
+kable(U_V$a_s, col.names=sapply(1:ncol(U_V$a_s), 
                     FUN=function(i) paste0("a_",i)) )
 
-kable(R_res$b_s, col.names=sapply(1:ncol(R_res$b_s), 
+kable(U_V$b_s, col.names=sapply(1:ncol(U_V$b_s), 
                     FUN=function(i) paste0("b_",i)) )
 
 options(digits=3)
 ```
 
-Because in this case the correlation matrix was used, $U$ and $V$ are the canonical variates and they are expressed as $U = aZ$ and $V = bZ$ where $Z$ is the standardized variates and $a$ and $b$ are the vectors of the coefficients of the linear combinations of the standardized variates that summarise the correlation between the variables.
+Because in this case the correlation matrix was used, $U$ and $V$ are the canonical variates and they are expressed as $U = aX$ and $V = bX$ where $X$ is the variables and $a$ and $b$ are the vectors of the coefficients of the linear combinations of the variates that summarise the correlation between the variables.
 
-A `r unclass(R_res$a_s[1,1])` **increase** in "Glucose intolerance" and a `r unclass(R_res$a_s[2,1])` **decrease** in "insulin response to oral glucose" are significantly correlated with a `r unclass(R_res$b_s[1,1])` **increase** in "relative weight" and a `r unclass(R_res$b_s[2,1])` **decrease** in "fasting plasma resistance"
+A `r unclass(U_V$a_s[1,1])` **change** in "Glucose intolerance" and a `r unclass(U_V$a_s[2,1])` **change** in "insulin response to oral glucose" are significantly correlated with a `r unclass(U_V$b_s[1,1])` **change** in "relative weight" and a `r unclass(U_V$b_s[2,1])` **change** in "fasting plasma resistance".
 
 
 
